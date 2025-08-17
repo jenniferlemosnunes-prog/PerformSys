@@ -137,19 +137,44 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Lógica para o modal de adicionar META
+
+// Lógica para o modal de adicionar META (COM PREENCHIMENTO DO DROPDOWN)
 const addMetaButton = document.getElementById('add-meta-button');
 const addMetaModal = document.getElementById('add-meta-modal');
 const addMetaForm = document.getElementById('add-meta-form');
+const employeeSelect = document.getElementById('employee-id-meta');
+
+// Função para buscar funcionários e preencher o dropdown
+const fetchEmployees = async () => {
+    const employeesCollection = collection(db, "funcionarios");
+    const querySnapshot = await getDocs(employeesCollection);
+    
+    // Limpa as opções existentes
+    employeeSelect.innerHTML = '';
+
+    querySnapshot.forEach((doc) => {
+        const employee = doc.data();
+        const option = document.createElement('option');
+        option.value = doc.id; // O ID do documento é o UID
+        option.textContent = employee.nome; // O nome do funcionário
+        employeeSelect.appendChild(option);
+    });
+};
 
 addMetaButton.addEventListener('click', () => {
+    fetchEmployees(); // Chama a função para preencher a lista antes de abrir o modal
     addMetaModal.style.display = 'flex';
 });
 
 addMetaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const employeeId = document.getElementById('employee-id-meta').value;
+    const employeeId = employeeSelect.value;
     const metaDescricao = document.getElementById('meta-descricao').value;
+
+    if (!employeeId) {
+        alert("Por favor, selecione um funcionário.");
+        return;
+    }
 
     try {
         await addDoc(collection(db, "metas"), {
