@@ -1,36 +1,38 @@
 import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { app } from "./firebase-config.js";
 
 const db = getFirestore(app);
-const auth = getAuth(app); 
+const auth = getAuth(app);
+const storage = getStorage(app);
 
 const userType = sessionStorage.getItem('userType');
 const userId = sessionStorage.getItem('userId');
 
 if (!userType || !userId) {
-    window.location.href = "index.html";
+    window.location.href = "index.html";
 } else {
-    const collectionName = userType === 'Gerente' ? "gerentes" : "funcionarios";
-    const docRef = doc(db, collectionName, userId);
-    
-    getDoc(docRef).then(docSnap => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('nomeGerente').textContent = data.nome;
-            document.getElementById('fotoGerente').src = data.foto || 'caminho/para/uma/imagem/padrao.png'; 
-            
-            document.querySelector('.dashboard-page').style.display = 'flex';
-        } else {
-            console.log("Nenhum dado de usuário encontrado!");
-            sessionStorage.clear();
-            window.location.href = "index.html";
-        }
-    }).catch(error => {
-        console.error("Erro ao carregar dados do usuário: ", error);
-        sessionStorage.clear();
-        window.location.href = "index.html";
-    });
+    const collectionName = userType === 'Gerente' ? "gerentes" : "funcionarios";
+    const docRef = doc(db, collectionName, userId);
+    
+    getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('nomeGerente').textContent = data.nome;
+            document.getElementById('fotoGerente').src = data.foto || 'caminho/para/uma/imagem/padrao.png'; 
+            
+            document.querySelector('.dashboard-page').style.display = 'flex';
+        } else {
+            console.log("Nenhum dado de usuário encontrado!");
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+    }).catch(error => {
+        console.error("Erro ao carregar dados do usuário: ", error);
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    });
 }
 
 // Lógica para abrir/fechar a barra lateral
@@ -49,34 +51,34 @@ if (sidebarToggle && sidebar && mainContent) {
 const logoutButton = document.getElementById('logout-button');
 
 if (logoutButton) {
-    logoutButton.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            sessionStorage.clear();
-            window.location.href = "index.html";
-        } catch (error) {
-            console.error("Erro ao fazer logout:", error);
-            alert("Erro ao sair. Tente novamente.");
-        }
-    });
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error("Erro ao fazer logout:", error);
+            alert("Erro ao sair. Tente novamente.");
+        }
+    });
 }
 
 const navLinks = document.querySelectorAll('.main-menu li');
 const contentSections = document.querySelectorAll('.content-section');
 
 navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        const sectionId = link.getAttribute('data-section');
-        contentSections.forEach(section => {
-            if (section.id === sectionId) {
-                section.classList.add('active');
-            } else {
-                section.classList.remove('active');
-            }
-        });
-        navLinks.forEach(navLink => navLink.classList.remove('active'));
-        link.classList.add('active');
-    });
+    link.addEventListener('click', () => {
+        const sectionId = link.getAttribute('data-section');
+        contentSections.forEach(section => {
+            if (section.id === sectionId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        link.classList.add('active');
+    });
 });
 
 const addContractButton = document.getElementById('add-contract-button');
@@ -85,60 +87,60 @@ const closeButton = document.querySelector('.close-button');
 const form = document.getElementById('add-contract-form');
 
 if (addContractButton) {
-    addContractButton.addEventListener('click', () => {
-        modal.style.display = 'block';
-    });
+    addContractButton.addEventListener('click', () => {
+        modal.style.display = 'block';
+    });
 }
 
 if (closeButton) {
-    closeButton.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
+    closeButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
 }
 
 window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
 });
 
 if (form) {
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-        const employeeName = document.getElementById('employee-name').value;
-        const contractType = document.getElementById('contract-type').value;
-        const startDate = document.getElementById('start-date').value;
-        const contractPdfInput = document.getElementById('contract-pdf');
-        const pdfFile = contractPdfInput.files[0];
+        const employeeName = document.getElementById('employee-name').value;
+        const contractType = document.getElementById('contract-type').value;
+        const startDate = document.getElementById('start-date').value;
+        const contractPdfInput = document.getElementById('contract-pdf');
+        const pdfFile = contractPdfInput.files[0];
 
-        let pdfPath = null;
+        let pdfPath = null;
 
-        if (pdfFile) {
-            const sanitizedFileName = pdfFile.name.replace(/[^a-zA-Z0-9._-]/g, '');
-            pdfPath = `contratos_pdf/${sanitizedFileName}`;
-            
-            alert(`Contrato salvo com o nome: "${sanitizedFileName}".\n\nPor favor, salve o arquivo no seu computador e adicione-o na pasta "contratos_pdf" do seu projeto e depois suba para o GitHub.`);
-        }
+        if (pdfFile) {
+            const sanitizedFileName = pdfFile.name.replace(/[^a-zA-Z0-9._-]/g, '');
+            pdfPath = `contratos_pdf/${sanitizedFileName}`;
+            
+            alert(`Contrato salvo com o nome: "${sanitizedFileName}".\n\nPor favor, salve o arquivo no seu computador e adicione-o na pasta "contratos_pdf" do seu projeto e depois suba para o GitHub.`);
+        }
 
-        const contractsCollection = collection(db, "contratos");
+        const contractsCollection = collection(db, "contratos");
 
-        try {
-            await addDoc(contractsCollection, {
-                nomeFuncionario: employeeName,
-                tipoContrato: contractType,
-                dataInicio: startDate,
-                caminhoContrato: pdfPath
-            });
+        try {
+            await addDoc(contractsCollection, {
+                nomeFuncionario: employeeName,
+                tipoContrato: contractType,
+                dataInicio: startDate,
+                caminhoContrato: pdfPath
+            });
 
-            alert("Contrato adicionado com sucesso!");
-            form.reset();
-            modal.style.display = 'none';
-        } catch (error) {
-            console.error("Erro ao adicionar contrato: ", error);
-            alert("Erro ao adicionar contrato. Verifique o console para mais detalhes.");
-        }
-    });
+            alert("Contrato adicionado com sucesso!");
+            form.reset();
+            modal.style.display = 'none';
+        } catch (error) {
+            console.error("Erro ao adicionar contrato: ", error);
+            alert("Erro ao adicionar contrato. Verifique o console para mais detalhes.");
+        }
+    });
 }
 
 // --- CÓDIGO PARA EXIBIR A LISTA DE CONTRATOS ---
@@ -165,7 +167,7 @@ if (contratosListDiv) {
                 <p><strong>Tipo de Contrato:</strong> ${contract.tipoContrato}</p>
                 <p><strong>Data de Início:</strong> ${contract.dataInicio}</p>
                 ${pdfPath ? `<p><strong>Contrato:</strong> <a href="${githubPagesUrl}" target="_blank">Ver Contrato</a></p>` : ''}
-                <button class="delete-contract-button" data-id="${doc.id}">Excluir Contrato</button>
+                <button class="delete-contract-button" data-id="${doc.id}" data-url="${pdfPath}">Excluir Contrato</button>
                 <hr>
             `;
             contratoItem.classList.add('contrato-item');
@@ -176,18 +178,32 @@ if (contratosListDiv) {
             if (deleteButton) {
                 deleteButton.addEventListener('click', async () => {
                     const docId = deleteButton.getAttribute('data-id');
-                    const confirmDelete = confirm("Tem certeza que deseja excluir este contrato?");
+                    const arquivoUrl = deleteButton.getAttribute('data-url');
+                    const confirmDelete = confirm("Tem certeza que deseja excluir este contrato? Essa ação é permanente!");
                     if (confirmDelete) {
-                        try {
-                            await deleteDoc(doc(db, "contratos", docId));
-                            alert("Contrato excluído com sucesso!");
-                        } catch (error) {
-                            console.error("Erro ao excluir o contrato: ", error);
-                            alert("Erro ao excluir o contrato. Verifique o console para mais detalhes.");
-                        }
+                        await excluirContrato(docId, arquivoUrl);
                     }
                 });
             }
         });
     });
+}
+
+// --- FUNÇÃO PARA EXCLUIR CONTRATO E ARQUIVO DO STORAGE ---
+async function excluirContrato(contratoId, arquivoUrl) {
+    try {
+        // Excluir o documento do Firestore
+        await deleteDoc(doc(db, "contratos", contratoId));
+
+        // Excluir o arquivo PDF do Storage
+        if (arquivoUrl) {
+            const arquivoRef = ref(storage, arquivoUrl);
+            await deleteObject(arquivoRef);
+        }
+
+        alert("Contrato excluído com sucesso!");
+    } catch (error) {
+        console.error("Erro ao excluir o contrato:", error);
+        alert("Erro ao excluir o contrato. Verifique o console para mais detalhes.");
+    }
 }
