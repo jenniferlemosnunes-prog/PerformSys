@@ -8,8 +8,31 @@ const auth = getAuth(app);
 const userType = sessionStorage.getItem('userType');
 const userId = sessionStorage.getItem('userId');
 
-// Mostra o dashboard imediatamente
-document.querySelector('.dashboard-page').style.display = 'flex';
+// Lógica de redirecionamento em caso de usuário não logado ou tipo incorreto
+if (!userType || userType !== 'Funcionario' || !userId) {
+    window.location.href = "index.html";
+} else {
+    // Mostra o dashboard imediatamente
+    document.querySelector('.dashboard-page').style.display = 'flex';
+    
+    // Carrega os dados do funcionário
+    const docRef = doc(db, "funcionarios", userId);
+    getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('nomeFuncionario').textContent = data.nome;
+            document.getElementById('fotoFuncionario').src = data.foto;
+        } else {
+            console.log("Nenhum dado de usuário encontrado!");
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+    }).catch(error => {
+        console.error("Erro ao carregar dados do usuário: ", error);
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    });
+}
 
 // Lógica para abrir/fechar a barra lateral e expandir o conteúdo
 const sidebarToggle = document.querySelector('.sidebar-toggle');
@@ -60,29 +83,6 @@ logoutButton.addEventListener('click', async () => {
         alert("Erro ao sair. Tente novamente.");
     }
 });
-
-if (!userType || userType !== 'Funcionario' || !userId) {
-    // Redireciona se não for um funcionário válido
-    window.location.href = "index.html";
-} else {
-    // Carrega os dados do funcionário
-    const docRef = doc(db, "funcionarios", userId);
-    getDoc(docRef).then(docSnap => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('nomeFuncionario').textContent = data.nome;
-            document.getElementById('fotoFuncionario').src = data.foto;
-        } else {
-            console.log("Nenhum dado de usuário encontrado!");
-            sessionStorage.clear();
-            window.location.href = "index.html";
-        }
-    }).catch(error => {
-        console.error("Erro ao carregar dados do usuário: ", error);
-        sessionStorage.clear();
-        window.location.href = "index.html";
-    });
-}
 
 // FUNÇÃO PARA BUSCAR E EXIBIR METAS
 const loadMetas = () => {
