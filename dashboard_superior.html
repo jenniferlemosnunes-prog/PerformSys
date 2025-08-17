@@ -1,93 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gerente</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gerente</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard-page">
-        <aside class="sidebar">
-            <div class="logo-container">
-                <img src="assets/images/logo.performsys.png" alt="Logo da PerformSys">
-            </div>
-            <div class="user-profile">
-                <img id="fotoGerente" src="assets/images/placeholder.png" alt="Foto do Gerente">
-                <p id="nomeGerente">Nome do Gerente</p>
-            </div>
-            <nav class="main-menu">
-                <ul>
-                    <li data-section="inicio" class="active"><i class="material-icons">home</i> Início</li>
-                    <li data-section="funcionarios"><i class="material-icons">people</i> Funcionários</li>
-                    <li data-section="contratos"><i class="material-icons">assignment</i> Contratos</li>
-                    <li id="logout-button"><i class="material-icons">exit_to_app</i> Sair</li>
-                </ul>
-            </nav>
-        </aside>
-        
-        <main class="main-content">
-            <div class="header">
-                <h1>Painel do Gerente</h1>
-                <span class="sidebar-toggle material-icons">menu</span>
-            </div>
+    <div class="dashboard-page">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/images/logo.performsys.png" alt="Logo da PerformSys">
+            </div>
+            <div class="user-profile">
+                <img id="fotoGerente" src="assets/images/placeholder.png" alt="Foto do Gerente">
+                <p id="nomeGerente">Nome do Gerente</p>
+            </div>
+            <nav class="main-menu">
+                <ul>
+                    <li data-section="inicio" class="active"><i class="material-icons">home</i> Início</li>
+                    <li data-section="funcionarios"><i class="material-icons">people</i> Funcionários</li>
+                    <li data-section="contratos"><i class="material-icons">assignment</i> Contratos</li>
+                                        <li data-section="metas"><i class="material-icons">track_changes</i> Metas</li>
+                    <li id="logout-button"><i class="material-icons">exit_to_app</i> Sair</li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>Painel do Gerente</h1>
+                <span class="sidebar-toggle material-icons">menu</span>
+            </div>
 
-            <section id="inicio" class="content-section active">
-                <h2>Início</h2>
-                <div class="inicio-content">
-                    <p>Bem-vindo ao painel de controle da PerformSys. Aqui você pode gerenciar a empresa.</p>
-                    <div class="empresa-info">
-                        <h3>Dados da Empresa</h3>
-                        <p><strong>EMPRESA:</strong> PerformSys Tecnologia S.A.</p>
-                        <p><strong>CNPJ:</strong> 47.912.684/0001-55</p>
-                        <p><strong>FUNDAÇÃO:</strong> 12/08/2016</p>
-                        <p><strong>FEDERAÇÃO:</strong> AV. Paulista, 200 - Bela Vista, SÃO PAULO - SP</p>
-                        <p><strong>N.E.:</strong> 983745</p>
-                        <p><strong>ENDEREÇO:</strong> AV. Paulista, 200 - Bela Vista, SÃO PAULO - SP 01310-200</p>
-                        <img src="assets/images/logo-ps.png" alt="Logo da Empresa" class="logo-empresa">
-                    </div>
-                </div>
-            </section>
-            
-            <section id="funcionarios" class="content-section">
-                <h2>Funcionários</h2>
-                <div id="funcionarios-list">
-                    </div>
-            </section>
-            
-            <section id="contratos" class="content-section">
-                <h2>Contratos</h2>
-                <input type="text" placeholder="Buscar por nome do funcionário...">
-                <button id="add-contract-button">Adicionar Novo Contrato</button>
-                
-                <div id="contratos-list"></div>
-            </section>
-        </main>
-    </div>
+            <section id="inicio" class="content-section active">
+                <h2>Início</h2>
+                <div class="inicio-content">
+                    <p>Bem-vindo ao painel de controle da PerformSys. Aqui você pode gerenciar a empresa.</p>
+                    <div class="empresa-info">
+                        <h3>Dados da Empresa</h3>
+                        <p><strong>EMPRESA:</strong> PerformSys Tecnologia S.A.</p>
+                        <p><strong>CNPJ:</strong> 47.912.684/0001-55</p>
+                        <p><strong>FUNDAÇÃO:</strong> 12/08/2016</p>
+                        <p><strong>FEDERAÇÃO:</strong> AV. Paulista, 200 - Bela Vista, SÃO PAULO - SP</p>
+                        <p><strong>N.E.:</strong> 983745</p>
+                        <p><strong>ENDEREÇO:</strong> AV. Paulista, 200 - Bela Vista, SÃO PAULO - SP 01310-200</p>
+                        <img src="assets/images/logo-ps.png" alt="Logo da Empresa" class="logo-empresa">
+                    </div>
+                </div>
+            </section>
+            
+            <section id="funcionarios" class="content-section">
+                <h2>Funcionários</h2>
+                <div id="funcionarios-list">
+                    </div>
+            </section>
+            
+            <section id="contratos" class="content-section">
+                <h2>Contratos</h2>
+                <input type="text" placeholder="Buscar por nome do funcionário...">
+                <button id="add-contract-button">Adicionar Novo Contrato</button>
+                
+                <div id="contratos-list"></div>
+            </section>
 
-    <div id="add-contract-modal" class="modal">
+            <section id="metas" class="content-section">
+                <h2>Metas</h2>
+                <button id="add-meta-button">Adicionar Nova Meta</button>
+                <div id="metas-list">
+                    </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="add-contract-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Adicionar Novo Contrato</h2>
+            <form id="add-contract-form">
+                <label for="employee-name">Nome do Funcionário:</label>
+                <input type="text" id="employee-name" required>
+                
+                <label for="contract-type">Tipo de Contrato:</label>
+                <input type="text" id="contract-type" required>
+                
+                <label for="start-date">Data de Início:</label>
+                <input type="date" id="start-date" required>
+
+                <label for="contract-pdf">Anexar Contrato (PDF):</label>
+                <input type="file" id="contract-pdf" accept=".pdf" required>
+                
+                <button type="submit" id="save-contract">Salvar Contrato</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-meta-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Adicionar Novo Contrato</h2>
-            <form id="add-contract-form">
-                <label for="employee-name">Nome do Funcionário:</label>
-                <input type="text" id="employee-name" required>
+            <h2>Adicionar Nova Meta</h2>
+            <form id="add-meta-form">
+                <label for="employee-id-meta">ID do Funcionário:</label>
+                <input type="text" id="employee-id-meta" required>
                 
-                <label for="contract-type">Tipo de Contrato:</label>
-                <input type="text" id="contract-type" required>
+                <label for="meta-descricao">Descrição da Meta:</label>
+                <textarea id="meta-descricao" required></textarea>
                 
-                <label for="start-date">Data de Início:</label>
-                <input type="date" id="start-date" required>
-
-                <label for="contract-pdf">Anexar Contrato (PDF):</label>
-                <input type="file" id="contract-pdf" accept=".pdf" required>
-                
-                <button type="submit" id="save-contract">Salvar Contrato</button>
+                <button type="submit" id="save-meta">Salvar Meta</button>
             </form>
         </div>
     </div>
-    
-    <script type="module" src="dashboard_superior.js"></script>
+    
+    <script type="module" src="dashboard_superior.js"></script>
 </body>
 </html>
