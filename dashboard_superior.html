@@ -102,11 +102,15 @@
             <span class="close-button">&times;</span>
             <h2>Adicionar Nova Meta</h2>
             <form id="add-meta-form">
-                <label for="employee-id-meta">ID do Funcionário:</label>
-                <input type="text" id="employee-id-meta" required>
+                <div class="form-group">
+                    <label for="employee-id-meta">ID do Funcionário:</label>
+                    <input type="text" id="employee-id-meta" required>
+                </div>
                 
-                <label for="meta-descricao">Descrição da Meta:</label>
-                <textarea id="meta-descricao" required></textarea>
+                <div class="form-group">
+                    <label for="meta-descricao">Descrição da Meta:</label>
+                    <textarea id="meta-descricao" rows="5" required></textarea>
+                </div>
                 
                 <button type="submit" id="save-meta">Salvar Meta</button>
             </form>
