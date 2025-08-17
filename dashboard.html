@@ -10,8 +10,8 @@
     <button class="sidebar-toggle">&#9776;</button>
     <div class="sidebar">
         <div class="user-info">
-            <img src="assets/images/placeholder.png.png" alt="Foto do Usuário" class="user-photo">
-            <h3>Rodrigo Nisizaka Aguiar</h3>
+            <img id="fotoFuncionario" src="assets/images/placeholder.png.png" alt="Foto do Usuário" class="user-photo">
+            <h3 id="nomeFuncionario">Carregando...</h3>
         </div>
         <nav class="main-menu">
             <ul>
@@ -21,7 +21,7 @@
                 <li data-section="contrato">Contrato</li>
                 <li data-section="avaliacao">Avaliações Anual</li>
                 <li data-section="metas">Metas</li>
-                <li data-section="sair">Sair</li>
+                <li id="logout-button">Sair</li>
             </ul>
         </nav>
         <div class="footer">
@@ -34,12 +34,12 @@
                 <h2>Dados Pessoais do funcionário</h2>
             </div>
             <div class="section-content-flex">
-                <img src="assets/images/placeholder.png.png" alt="Foto do Funcionário" class="user-photo-large">
+                <img id="fotoFuncionarioLarge" src="assets/images/placeholder.png.png" alt="Foto do Funcionário" class="user-photo-large">
                 <div class="user-data">
-                    <p><strong>NOME:</strong> Rodrigo Nisizaka Aguiar</p>
-                    <p><strong>CPF:</strong> 213.759.486-13</p>
-                    <p><strong>N.R:</strong> PS-002573</p>
-                    <p><strong>D.I:</strong> 15/03/2022</p>
+                    <p><strong>NOME:</strong> <span id="nomeFuncionarioPrincipal">Carregando...</span></p>
+                    <p><strong>CPF:</strong> <span id="cpfFuncionario">Carregando...</span></p>
+                    <p><strong>N.R:</strong> <span id="nrFuncionario">Carregando...</span></p>
+                    <p><strong>D.I:</strong> <span id="diFuncionario">Carregando...</span></p>
                 </div>
             </div>
             <div class="section-header">
@@ -58,9 +58,28 @@
                 </div>
             </div>
         </section>
-
-        </div>
-
-    <script src="dashboard.js"></script>
+        <section id="pendencias" class="content-section">
+            <h2>Pendências</h2>
+            <div class="pendencias-list">
+                </div>
+        </section>
+        <section id="contrato" class="content-section">
+            <h2>Contratos</h2>
+            <div class="contrato-list">
+                </div>
+        </section>
+        <section id="avaliacao" class="content-section">
+            <h2>Avaliações</h2>
+            <div class="avaliacao-content">
+                </div>
+        </section>
+        <section id="metas" class="content-section">
+            <h2>Metas</h2>
+            <div class="metas-content">
+                </div>
+        </section>
+        <div id="logout-button">Sair</div>
+    </div>
+    <script src="dashboard_funcionario.js" type="module"></script>
 </body>
 </html>

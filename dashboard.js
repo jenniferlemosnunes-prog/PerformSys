@@ -1,41 +1,89 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebarToggle = document.querySelector('.sidebar-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    const dashboardPage = document.querySelector('.dashboard-page');
-    const menuItems = document.querySelectorAll('.main-menu li');
+import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { app } from "./firebase-config.js";
 
-    // Funcionalidade para abrir/fechar a barra lateral
-    if (sidebarToggle && sidebar && dashboardPage) {
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            dashboardPage.classList.toggle('sidebar-open');
-        });
-    }
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-    // Funcionalidade para alternar entre as seções
-    menuItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Remove a classe 'active' de todos os itens do menu
-            menuItems.forEach(i => i.classList.remove('active'));
-            // Adiciona a classe 'active' ao item clicado
-            item.classList.add('active');
+const userType = sessionStorage.getItem('userType');
+const userId = sessionStorage.getItem('userId');
 
-            // Pega o ID da seção do atributo 'data-section'
-            const sectionId = item.getAttribute('data-section');
-            const sections = document.querySelectorAll('.content-section');
+if (!userType || !userId) {
+    window.location.href = "index.html";
+} else {
+    const collectionName = userType === 'Gerente' ? "gerentes" : "funcionarios";
+    const docRef = doc(db, collectionName, userId);
+    
+    getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Atualiza as informações do usuário na barra lateral
+            document.getElementById('nomeFuncionario').textContent = data.nome;
+            document.getElementById('fotoFuncionario').src = data.foto || 'caminho/para/uma/imagem/padrao.png'; 
+            
+            // Atualiza as informações pessoais na seção 'Início'
+            document.getElementById('nomeFuncionarioPrincipal').textContent = data.nome || 'N/A';
+            document.getElementById('cpfFuncionario').textContent = data.cpf || 'N/A';
+            document.getElementById('nrFuncionario').textContent = data.nr || 'N/A';
+            document.getElementById('diFuncionario').textContent = data.di || 'N/A';
+            document.getElementById('fotoFuncionarioLarge').src = data.foto || 'caminho/para/uma/imagem/padrao.png';
 
-            // Esconde todas as seções
-            sections.forEach(section => {
+            document.querySelector('.dashboard-page').style.display = 'flex';
+        } else {
+            console.log("Nenhum dado de usuário encontrado!");
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+    }).catch(error => {
+        console.error("Erro ao carregar dados do usuário: ", error);
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    });
+}
+
+// Lógica para abrir/fechar a barra lateral
+const sidebarToggle = document.querySelector('.sidebar-toggle');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+if (sidebarToggle && sidebar && mainContent) {
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        mainContent.classList.toggle('expanded');
+    });
+}
+
+// Lógica de Logout
+const logoutButton = document.getElementById('logout-button');
+if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error("Erro ao fazer logout:", error);
+            alert("Erro ao sair. Tente novamente.");
+        }
+    });
+}
+
+// Lógica para exibir seções do menu
+const navLinks = document.querySelectorAll('.main-menu li');
+const contentSections = document.querySelectorAll('.content-section');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        const sectionId = link.getAttribute('data-section');
+        contentSections.forEach(section => {
+            if (section.id === sectionId) {
+                section.classList.add('active');
+            } else {
                 section.classList.remove('active');
-            });
-
-            // Mostra a seção correspondente
-            const activeSection = document.getElementById(sectionId);
-            if (activeSection) {
-                activeSection.classList.add('active');
             }
         });
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        link.classList.add('active');
     });
-
 });
