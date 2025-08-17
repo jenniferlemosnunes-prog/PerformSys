@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { app } from "./firebase-config.js";
 
@@ -115,11 +115,9 @@ if (form) {
         let pdfPath = null;
 
         if (pdfFile) {
-            // Gera um nome para o arquivo e o caminho no seu repositório
-            const sanitizedFileName = pdfFile.name.replace(/[^a-zA-Z0-9._-]/g, '');
+            const sanitizedFileName = pdfFile.name.replace(/[^a-zA-Z0-9._-]/g, '');
             pdfPath = `contratos_pdf/${sanitizedFileName}`;
             
-            // Avisa o usuário que ele precisa fazer a parte manual
             alert(`Contrato salvo com o nome: "${sanitizedFileName}".\n\nPor favor, salve o arquivo no seu computador e adicione-o na pasta "contratos_pdf" do seu projeto e depois suba para o GitHub.`);
         }
 
@@ -141,4 +139,55 @@ if (form) {
             alert("Erro ao adicionar contrato. Verifique o console para mais detalhes.");
         }
     });
+}
+
+// --- CÓDIGO PARA EXIBIR A LISTA DE CONTRATOS ---
+const contratosListDiv = document.getElementById('contratos-list');
+
+if (contratosListDiv) {
+    const q = query(collection(db, "contratos"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        contratosListDiv.innerHTML = ''; // Limpa a lista antes de recriá-la
+        querySnapshot.forEach((doc) => {
+            const contract = doc.data();
+
+            // Pega o caminho do contrato salvo no Firestore
+            const pdfPath = contract.caminhoContrato;
+
+            // Cria o link completo para o arquivo no GitHub Pages
+            const githubPagesUrl = `https://jenniferlemosnunes-prog.github.io/PerformSys/${pdfPath}`;
+            
+            // Cria o HTML para exibir as informações e o botão de exclusão
+            const contratoItem = document.createElement('div');
+            contratoItem.innerHTML = `
+                <p><strong>Nome do Funcionário:</strong> ${contract.nomeFuncionario}</p>
+                <p><strong>Tipo de Contrato:</strong> ${contract.tipoContrato}</p>
+                <p><strong>Data de Início:</strong> ${contract.dataInicio}</p>
+                ${pdfPath ? `<p><strong>Contrato:</strong> <a href="${githubPagesUrl}" target="_blank">Ver Contrato</a></p>` : ''}
+                <button class="delete-contract-button" data-id="${doc.id}">Excluir Contrato</button>
+                <hr>
+            `;
+            contratoItem.classList.add('contrato-item');
+            contratosListDiv.appendChild(contratoItem);
+
+            // Adiciona o evento de clique para o botão de exclusão
+            const deleteButton = contratoItem.querySelector('.delete-contract-button');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', async () => {
+                    const docId = deleteButton.getAttribute('data-id');
+                    const confirmDelete = confirm("Tem certeza que deseja excluir este contrato?");
+                    if (confirmDelete) {
+                        try {
+                            await deleteDoc(doc(db, "contratos", docId));
+                            alert("Contrato excluído com sucesso!");
+                        } catch (error) {
+                            console.error("Erro ao excluir o contrato: ", error);
+                            alert("Erro ao excluir o contrato. Verifique o console para mais detalhes.");
+                        }
+                    }
+                });
+            }
+        });
+    });
 }
