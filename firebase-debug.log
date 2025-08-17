@@ -1,0 +1,46 @@
+[debug] [2025-08-16T23:37:48.312Z] ----------------------------------------------------------------------
+[debug] [2025-08-16T23:37:48.315Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ednal\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2025-08-16T23:37:48.315Z] CLI Version:   14.12.1
+[debug] [2025-08-16T23:37:48.315Z] Platform:      win32
+[debug] [2025-08-16T23:37:48.315Z] Node Version:  v22.18.0
+[debug] [2025-08-16T23:37:48.316Z] Time:          Sat Aug 16 2025 20:37:48 GMT-0300 (Horário Padrão de Brasília)
+[debug] [2025-08-16T23:37:48.316Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-16T23:37:48.480Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-16T23:37:48.480Z] > authorizing via signed-in user (jenniferlemosnunes@gmail.com)
+[debug] [2025-08-16T23:37:48.480Z] [iam] checking project performsys-novo for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-08-16T23:37:48.481Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:48.481Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:48.482Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/performsys-novo:testIamPermissions [none]
+[debug] [2025-08-16T23:37:48.482Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/performsys-novo:testIamPermissions x-goog-quota-user=projects/performsys-novo
+[debug] [2025-08-16T23:37:48.482Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/performsys-novo:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-16T23:37:49.467Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/performsys-novo:testIamPermissions 200
+[debug] [2025-08-16T23:37:49.467Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/performsys-novo:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-16T23:37:49.468Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:49.468Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:49.468Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/performsys-novo [none]
+[debug] [2025-08-16T23:37:49.954Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/performsys-novo 200
+[debug] [2025-08-16T23:37:49.954Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/performsys-novo {"projectId":"performsys-novo","projectNumber":"1009354682850","displayName":"PerformSys-Novo","name":"projects/performsys-novo","resources":{"hostingSite":"performsys-novo"},"state":"ACTIVE","etag":"1_d768826e-95d8-4c89-8176-b5fb7cc17887"}
+[info] 
+[info] === Deploying to 'performsys-novo'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-08-16T23:37:49.958Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:49.958Z] Checked if tokens are valid: true, expires at: 1755388910470
+[debug] [2025-08-16T23:37:49.959Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/performsys-novo/versions [none]
+[debug] [2025-08-16T23:37:49.959Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/performsys-novo/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-08-16T23:37:51.406Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/performsys-novo/versions 200
+[debug] [2025-08-16T23:37:51.406Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/performsys-novo/versions {"name":"projects/1009354682850/sites/performsys-novo/versions/d72c996923e4af13","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[performsys-novo]: beginning deploy... 
+[info] i  hosting[performsys-novo]: found 129192 files in . 
+[debug] [2025-08-16T23:38:05.202Z] [hosting] uploading with 200 concurrency
+[debug] [2025-08-16T23:38:05.203Z] [hosting] hash cache [] not populated
+[debug] [2025-08-16T23:38:05.225Z] Error: EBUSY: resource busy or locked, open 'C:\Users\ednal\ntuser.dat.LOG2'
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-08-16T23:38:05.226Z] Error: EBUSY: resource busy or locked, open 'C:\Users\ednal\NTUSER.DAT'
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-08-16T23:38:05.227Z] Error: EBUSY: resource busy or locked, open 'C:\Users\ednal\ntuser.dat.LOG1'
+[error] 
+[error] Error: An unexpected error has occurred.
