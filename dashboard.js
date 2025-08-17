@@ -1,38 +1,25 @@
 import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { app } from "./firebase-config.js";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const userType = sessionStorage.getItem('userType');
-const userId = sessionStorage.getItem('userId');
+// Esconde o dashboard por padrão até que os dados do usuário sejam carregados
+document.querySelector('.dashboard-page').style.display = 'none';
 
-// Lógica de redirecionamento em caso de usuário não logado ou tipo incorreto
-if (!userType || userType !== 'Funcionario' || !userId) {
-    window.location.href = "index.html";
-} else {
-    // Mostra o dashboard imediatamente
-    document.querySelector('.dashboard-page').style.display = 'flex';
-    
-    // Carrega os dados do funcionário
-    const docRef = doc(db, "funcionarios", userId);
-    getDoc(docRef).then(docSnap => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('nomeFuncionario').textContent = data.nome;
-            document.getElementById('fotoFuncionario').src = data.foto;
-        } else {
-            console.log("Nenhum dado de usuário encontrado!");
-            sessionStorage.clear();
-            window.location.href = "index.html";
-        }
-    }).catch(error => {
-        console.error("Erro ao carregar dados do usuário: ", error);
+// Lógica de Logout
+const logoutButton = document.getElementById('logout-button');
+logoutButton.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
         sessionStorage.clear();
         window.location.href = "index.html";
-    });
-}
+    } catch (error) {
+        console.error("Erro ao fazer logout:", error);
+        alert("Erro ao sair. Tente novamente.");
+    }
+});
 
 // Lógica para abrir/fechar a barra lateral e expandir o conteúdo
 const sidebarToggle = document.querySelector('.sidebar-toggle');
@@ -68,26 +55,52 @@ navLinks.forEach(link => {
         } else if (sectionId === 'contratos') {
             loadContratos();
         }
+        // Para a seção "Inicio", não precisa carregar dados específicos do Firestore
+        // mas garante que ela está ativa
+        if (sectionId === 'inicio') {
+            document.getElementById('inicio').classList.add('active');
+        }
     });
 });
 
-// Lógica de Logout
-const logoutButton = document.getElementById('logout-button');
-logoutButton.addEventListener('click', async () => {
-    try {
-        await signOut(auth);
+// Listener para o estado de autenticação do Firebase
+onAuthStateChanged(auth, (user) => {
+    const userType = sessionStorage.getItem('userType');
+    const userId = sessionStorage.getItem('userId');
+
+    if (user && userType === 'Funcionario' && userId === user.uid) {
+        // Se o usuário está autenticado no Firebase E o sessionStorage corresponde
+        // Carrega os dados do funcionário
+        const docRef = doc(db, "funcionarios", userId);
+        getDoc(docRef).then(docSnap => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('nomeFuncionario').textContent = data.nome;
+                document.getElementById('fotoFuncionario').src = data.foto;
+                document.querySelector('.dashboard-page').style.display = 'flex'; // Agora mostra o dashboard
+            } else {
+                console.log("Nenhum dado de usuário encontrado no Firestore para o UID:", userId);
+                sessionStorage.clear();
+                window.location.href = "index.html";
+            }
+        }).catch(error => {
+            console.error("Erro ao carregar dados do usuário do Firestore: ", error);
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        });
+    } else {
+        // Se não houver usuário autenticado no Firebase ou tipo/ID não corresponderem
+        console.log("Usuário não autenticado ou tipo/ID incorreto. Redirecionando para login.");
         sessionStorage.clear();
         window.location.href = "index.html";
-    } catch (error) {
-        console.error("Erro ao fazer logout:", error);
-        alert("Erro ao sair. Tente novamente.");
     }
 });
+
 
 // FUNÇÃO PARA BUSCAR E EXIBIR METAS
 const loadMetas = () => {
     const metasList = document.getElementById('metas-list');
-    const metasQuery = query(collection(db, "metas"), where("funcionarioId", "==", userId));
+    const metasQuery = query(collection(db, "metas"), where("funcionarioId", "==", auth.currentUser.uid));
 
     onSnapshot(metasQuery, (querySnapshot) => {
         metasList.innerHTML = '';
@@ -128,7 +141,7 @@ const loadMetas = () => {
 // FUNÇÃO PARA BUSCAR E EXIBIR PENDÊNCIAS
 const loadPendencias = () => {
     const pendenciasList = document.getElementById('pendencias-list');
-    const pendenciasQuery = query(collection(db, "pendencias"), where("funcionarioId", "==", userId));
+    const pendenciasQuery = query(collection(db, "pendencias"), where("funcionarioId", "==", auth.currentUser.uid));
 
     onSnapshot(pendenciasQuery, (querySnapshot) => {
         pendenciasList.innerHTML = '';
@@ -169,7 +182,7 @@ const loadPendencias = () => {
 // FUNÇÃO PARA BUSCAR E EXIBIR CONTRATOS
 const loadContratos = () => {
     const meusContratosList = document.getElementById('meus-contratos-list');
-    const contratosQuery = query(collection(db, "contratos"), where("funcionarioId", "==", userId));
+    const contratosQuery = query(collection(db, "contratos"), where("funcionarioId", "==", auth.currentUser.uid));
 
     onSnapshot(contratosQuery, (querySnapshot) => {
         meusContratosList.innerHTML = '';
