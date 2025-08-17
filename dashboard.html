@@ -1,85 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - PerformSys</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Funcionário</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body class="dashboard-page">
-    <button class="sidebar-toggle">&#9776;</button>
-    <div class="sidebar">
-        <div class="user-info">
-            <img id="fotoFuncionario" src="assets/images/placeholder.png.png" alt="Foto do Usuário" class="user-photo">
-            <h3 id="nomeFuncionario">Carregando...</h3>
-        </div>
-        <nav class="main-menu">
-            <ul>
-                <li data-section="inicio">Início</li>
-                <li data-section="manual">Manual do Usuário</li>
-                <li data-section="pendencias">Pendências</li>
-                <li data-section="contrato">Contrato</li>
-                <li data-section="avaliacao">Avaliações Anual</li>
-                <li data-section="metas">Metas</li>
-                <li id="logout-button">Sair</li>
-            </ul>
-        </nav>
-        <div class="footer">
-            <img src="assets/images/logo-ps.png.png" alt="Logo PS" class="logo-ps">
-        </div>
-    </div>
-    <div class="main-content">
-        <section id="inicio" class="content-section active">
-            <div class="section-header">
-                <h2>Dados Pessoais do funcionário</h2>
-            </div>
-            <div class="section-content-flex">
-                <img id="fotoFuncionarioLarge" src="assets/images/placeholder.png.png" alt="Foto do Funcionário" class="user-photo-large">
-                <div class="user-data">
-                    <p><strong>NOME:</strong> <span id="nomeFuncionarioPrincipal">Carregando...</span></p>
-                    <p><strong>CPF:</strong> <span id="cpfFuncionario">Carregando...</span></p>
-                    <p><strong>N.R:</strong> <span id="nrFuncionario">Carregando...</span></p>
-                    <p><strong>D.I:</strong> <span id="diFuncionario">Carregando...</span></p>
+<body>
+    <div class="dashboard-page">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/images/logo.performsys.png" alt="Logo da PerformSys">
+            </div>
+            <div class="user-profile">
+                <img id="fotoFuncionario" src="assets/images/placeholder.png" alt="Foto do Funcionário">
+                <p id="nomeFuncionario">Nome do Funcionário</p>
+            </div>
+            <nav class="main-menu">
+                <ul>
+                    <li data-section="inicio" class="active"><i class="material-icons">home</i> Início</li>
+                    <li data-section="contratos"><i class="material-icons">assignment</i> Meus Contratos</li>
+                                        <li data-section="metas"><i class="material-icons">track_changes</i> Metas</li>
+                    <li data-section="pendencias"><i class="material-icons">assignment_late</i> Pendências</li>
+                    <li id="logout-button"><i class="material-icons">exit_to_app</i> Sair</li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>Painel do Funcionário</h1>
+                <span class="sidebar-toggle material-icons">menu</span>
+            </div>
+
+            <section id="inicio" class="content-section active">
+                <h2>Início</h2>
+                <div class="inicio-content">
+                    <p>Bem-vindo ao seu painel na PerformSys. Use o menu ao lado para navegar.</p>
+                </div>
+            </section>
+            
+            <section id="contratos" class="content-section">
+                <h2>Meus Contratos</h2>
+                <div id="meus-contratos-list"></div>
+            </section>
+
+            <section id="metas" class="content-section">
+                <h2>Minhas Metas</h2>
+                <div id="metas-list">
+                    <p>Carregando suas metas...</p>
                 </div>
-            </div>
-            <div class="section-header">
-                <h2>Dados Empresariais</h2>
-            </div>
-            <div class="section-content-flex">
-                <img src="assets/images/logo.performsys.png.png" alt="Logo da Empresa" class="company-logo">
-                <div class="company-data">
-                    <p><strong>EMPRESA:</strong> PerformSys Tecnologia S.A.</p>
-                    <p><strong>CNPJ:</strong> 47.912.684/0001-55</p>
-                    <p><strong>FUNDAÇÃO:</strong> 12/08/2016</p>
-                    <p><strong>FEDERAÇÃO:</strong> SÃO PAULO - SP</p>
-                    <p><strong>N.E.:</strong> 983745</p>
-                    <p><strong>ENDEREÇO:</strong> Av. Paulista, 200- Bela Vista, SÃO PAULO-SP 01310-200</p>
-                    <p><strong>FUNCIONÁRIOS:</strong> 58</p>
+            </section>
+            
+            <section id="pendencias" class="content-section">
+                <h2>Pendências</h2>
+                <div id="pendencias-list">
+                    <p>Nenhuma pendência para mostrar.</p>
                 </div>
-            </div>
-        </section>
-        <section id="pendencias" class="content-section">
-            <h2>Pendências</h2>
-            <div class="pendencias-list">
-                </div>
-        </section>
-        <section id="contrato" class="content-section">
-            <h2>Contratos</h2>
-            <div class="contrato-list">
-                </div>
-        </section>
-        <section id="avaliacao" class="content-section">
-            <h2>Avaliações</h2>
-            <div class="avaliacao-content">
-                </div>
-        </section>
-        <section id="metas" class="content-section">
-            <h2>Metas</h2>
-            <div class="metas-content">
-                </div>
-        </section>
-        <div id="logout-button">Sair</div>
-    </div>
-    <script src="dashboard_funcionario.js" type="module"></script>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module" src="dashboard_funcionario.js"></script>
 </body>
 </html>

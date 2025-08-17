@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { app } from "./firebase-config.js";
 
@@ -8,27 +8,15 @@ const auth = getAuth(app);
 const userType = sessionStorage.getItem('userType');
 const userId = sessionStorage.getItem('userId');
 
-if (!userType || !userId) {
+if (!userType || userType !== 'Funcionario' || !userId) {
     window.location.href = "index.html";
 } else {
-    const collectionName = userType === 'Gerente' ? "gerentes" : "funcionarios";
-    const docRef = doc(db, collectionName, userId);
-    
+    const docRef = doc(db, "funcionarios", userId);
     getDoc(docRef).then(docSnap => {
         if (docSnap.exists()) {
             const data = docSnap.data();
-            
-            // Atualiza as informações do usuário na barra lateral
             document.getElementById('nomeFuncionario').textContent = data.nome;
-            document.getElementById('fotoFuncionario').src = data.foto || 'caminho/para/uma/imagem/padrao.png'; 
-            
-            // Atualiza as informações pessoais na seção 'Início'
-            document.getElementById('nomeFuncionarioPrincipal').textContent = data.nome || 'N/A';
-            document.getElementById('cpfFuncionario').textContent = data.cpf || 'N/A';
-            document.getElementById('nrFuncionario').textContent = data.nr || 'N/A';
-            document.getElementById('diFuncionario').textContent = data.di || 'N/A';
-            document.getElementById('fotoFuncionarioLarge').src = data.foto || 'caminho/para/uma/imagem/padrao.png';
-
+            document.getElementById('fotoFuncionario').src = data.foto;
             document.querySelector('.dashboard-page').style.display = 'flex';
         } else {
             console.log("Nenhum dado de usuário encontrado!");
@@ -42,32 +30,27 @@ if (!userType || !userId) {
     });
 }
 
+// Lógica de Logout
+const logoutButton = document.getElementById('logout-button');
+logoutButton.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    } catch (error) {
+        console.error("Erro ao fazer logout:", error);
+        alert("Erro ao sair. Tente novamente.");
+    }
+});
+
 // Lógica para abrir/fechar a barra lateral
 const sidebarToggle = document.querySelector('.sidebar-toggle');
 const sidebar = document.querySelector('.sidebar');
 const mainContent = document.querySelector('.main-content');
-
-if (sidebarToggle && sidebar && mainContent) {
-    sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        mainContent.classList.toggle('expanded');
-    });
-}
-
-// Lógica de Logout
-const logoutButton = document.getElementById('logout-button');
-if (logoutButton) {
-    logoutButton.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            sessionStorage.clear();
-            window.location.href = "index.html";
-        } catch (error) {
-            console.error("Erro ao fazer logout:", error);
-            alert("Erro ao sair. Tente novamente.");
-        }
-    });
-}
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    mainContent.classList.toggle('expanded');
+});
 
 // Lógica para exibir seções do menu
 const navLinks = document.querySelectorAll('.main-menu li');
@@ -87,3 +70,120 @@ navLinks.forEach(link => {
         link.classList.add('active');
     });
 });
+
+
+// FUNÇÃO PARA BUSCAR E EXIBIR METAS
+const loadMetas = () => {
+    const metasList = document.getElementById('metas-list');
+    const metasQuery = query(collection(db, "metas"), where("funcionarioId", "==", userId));
+
+    onSnapshot(metasQuery, (querySnapshot) => {
+        metasList.innerHTML = '';
+        if (querySnapshot.empty) {
+            metasList.innerHTML = '<p>Nenhuma meta atribuída a você.</p>';
+        } else {
+            querySnapshot.forEach((doc) => {
+                const meta = doc.data();
+                const metaId = doc.id;
+                const statusText = meta.status === "concluida" ? "Concluída" : "Pendente";
+                
+                const metaElement = document.createElement('div');
+                metaElement.classList.add('meta-item');
+                metaElement.innerHTML = `
+                    <p><strong>Descrição:</strong> ${meta.descricao}</p>
+                    <p><strong>Status:</strong> <span class="status-${meta.status}">${statusText}</span></p>
+                    ${meta.status === "pendente" ? `<button class="complete-meta-button" data-id="${metaId}">Marcar como Concluída</button>` : ''}
+                `;
+                metasList.appendChild(metaElement);
+            });
+            // Adiciona evento de clique para o botão "Marcar como Concluída"
+            document.querySelectorAll('.complete-meta-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const metaId = e.target.getAttribute('data-id');
+                    const metaRef = doc(db, "metas", metaId);
+                    try {
+                        await updateDoc(metaRef, { status: "concluida" });
+                        alert("Meta marcada como concluída!");
+                    } catch (error) {
+                        console.error("Erro ao atualizar o status da meta: ", error);
+                        alert("Erro ao marcar a meta como concluída.");
+                    }
+                });
+            });
+        }
+    });
+};
+
+// FUNÇÃO PARA BUSCAR E EXIBIR PENDÊNCIAS
+const loadPendencias = () => {
+    const pendenciasList = document.getElementById('pendencias-list');
+    // Esta é uma coleção de exemplo. Você precisará criar uma coleção "pendencias" no Firestore
+    const pendenciasQuery = query(collection(db, "pendencias"), where("funcionarioId", "==", userId));
+
+    onSnapshot(pendenciasQuery, (querySnapshot) => {
+        pendenciasList.innerHTML = '';
+        if (querySnapshot.empty) {
+            pendenciasList.innerHTML = '<p>Nenhuma pendência para você.</p>';
+        } else {
+            querySnapshot.forEach((doc) => {
+                const pendencia = doc.data();
+                const pendenciaId = doc.id;
+                const statusText = pendencia.status === "concluida" ? "Concluída" : "Pendente";
+                
+                const pendenciaElement = document.createElement('div');
+                pendenciaElement.classList.add('pendencia-item');
+                pendenciaElement.innerHTML = `
+                    <p><strong>Descrição:</strong> ${pendencia.descricao}</p>
+                    <p><strong>Status:</strong> <span class="status-${pendencia.status}">${statusText}</span></p>
+                    ${pendencia.status === "pendente" ? `<button class="complete-pendencia-button" data-id="${pendenciaId}">Marcar como Concluída</button>` : ''}
+                `;
+                pendenciasList.appendChild(pendenciaElement);
+            });
+            // Adiciona evento de clique para o botão "Marcar como Concluída" das pendências
+            document.querySelectorAll('.complete-pendencia-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const pendenciaId = e.target.getAttribute('data-id');
+                    const pendenciaRef = doc(db, "pendencias", pendenciaId);
+                    try {
+                        await updateDoc(pendenciaRef, { status: "concluida" });
+                        alert("Pendência marcada como concluída!");
+                    } catch (error) {
+                        console.error("Erro ao atualizar o status da pendência: ", error);
+                        alert("Erro ao marcar a pendência como concluída.");
+                    }
+                });
+            });
+        }
+    });
+};
+
+// Lógica para Contratos (exibição de contratos para o funcionário)
+const meusContratosList = document.getElementById('meus-contratos-list');
+const contratosQuery = query(collection(db, "contratos"), where("funcionarioId", "==", userId));
+
+onSnapshot(contratosQuery, (querySnapshot) => {
+    meusContratosList.innerHTML = '';
+    if (querySnapshot.empty) {
+        meusContratosList.innerHTML = '<p>Nenhum contrato encontrado para você.</p>';
+        return;
+    }
+    querySnapshot.forEach((doc) => {
+        const contrato = doc.data();
+        const contratoElement = document.createElement('div');
+        contratoElement.classList.add('contrato-item');
+        contratoElement.innerHTML = `
+            <p><strong>Nome do Funcionário:</strong> ${contrato.nomeFuncionario}</p>
+            <p><strong>Tipo de Contrato:</strong> ${contrato.tipoContrato}</p>
+            <p><strong>Data de Início:</strong> ${contrato.dataInicio}</p>
+            <p><strong>Contrato:</strong> <a href="${contrato.url}" target="_blank">Ver Contrato</a></p>
+        `;
+        meusContratosList.appendChild(contratoElement);
+    });
+});
+
+// Inicializa a exibição de dados quando a seção é clicada
+const metasNav = document.querySelector('[data-section="metas"]');
+metasNav.addEventListener('click', loadMetas);
+
+const pendenciasNav = document.querySelector('[data-section="pendencias"]');
+pendenciasNav.addEventListener('click', loadPendencias);
